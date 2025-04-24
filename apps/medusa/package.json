@@ -17,7 +17,7 @@
     "build": "medusa build",
     "seed": "medusa exec ./src/scripts/seed.ts",
     "start": "medusa start",
-    "dev": "medusa develop",
+    "dev": "medusa develop & node sleep.js 5 && yarn fix-entry",
     "sync": "medusa db:sync-links",
     "migrate:prod": "medusa db:migrate",
     "start:prod": "medusa start",
@@ -29,10 +29,11 @@
     "test:unit": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules jest --silent --runInBand --forceExit",
     "medusa:init": "yarn run nukedb && medusa db:create --db medusa2 && yarn run migrate && yarn run sync && yarn run seed && yarn run add-user",
     "add-user": "medusa user --email admin@medusa-test.com --password supersecret && medusa user --email admin@lambdacurry.dev --password password",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "fix-entry": "node ./fix-entry.js"
   },
   "dependencies": {
-    "@lambdacurry/medusa-product-reviews": "0.0.7",
+    "@lambdacurry/medusa-product-reviews": "^1.1.0",
     "@medusajs/admin-sdk": "2.7.0",
     "@medusajs/cli": "2.7.0",
     "@medusajs/framework": "2.7.0",

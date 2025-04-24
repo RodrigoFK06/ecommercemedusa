@@ -79,12 +79,24 @@ module.exports = defineConfig({
   ],
   admin: {
     backendUrl: process.env.ADMIN_BACKEND_URL,
-    vite: () => {
+    vite: (config) => {
       return {
+        ...config,
         optimizeDeps: {
           include: ['@lambdacurry/medusa-plugins-sdk'],
+        },
+        resolve: {
+          ...config.resolve,
+          alias: [
+            {
+              find: /^@lambdacurry.*$/,
+              replacement: (val: string) => val.replace(/\\/g, '/'),
+            },
+          ],
         },
       };
     },
   },
+  
+  
 });
