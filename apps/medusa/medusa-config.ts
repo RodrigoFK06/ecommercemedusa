@@ -1,23 +1,21 @@
-import { defineConfig, loadEnv } from '@medusajs/framework/utils'
+import { defineConfig, loadEnv } from '@medusajs/framework/utils';
 
-loadEnv(process.env.NODE_ENV || 'development', process.cwd())
+loadEnv(process.env.NODE_ENV || 'development', process.cwd());
 
-const REDIS_URL = process.env.REDIS_URL
-const STRIPE_API_KEY = process.env.STRIPE_API_KEY
-const IS_TEST = process.env.NODE_ENV === 'test'
+const REDIS_URL = process.env.REDIS_URL;
+const STRIPE_API_KEY = process.env.STRIPE_API_KEY;
+const IS_TEST = process.env.NODE_ENV === 'test';
 
-// General Redis options (para cache y event-bus)
 const redisOptions = {
   maxRetriesPerRequest: null,
   connectTimeout: 10000,
-  tls: {}, // Necesario si estás usando rediss:// (Upstash por ejemplo)
-}
+  tls: {},
+};
 
-// Redis options específicas para BullMQ (workflow-engine)
 const redisOptionsForBullMQ = {
   ...redisOptions,
-  maxRetriesPerRequest: null, // ❗ Obligatorio para BullMQ
-}
+  maxRetriesPerRequest: null,
+};
 
 const cacheModule = IS_TEST
   ? { resolve: '@medusajs/medusa/cache-inmemory' }
@@ -27,7 +25,7 @@ const cacheModule = IS_TEST
         redisUrl: REDIS_URL,
         redisOptions,
       },
-    }
+    };
 
 const eventBusModule = IS_TEST
   ? { resolve: '@medusajs/medusa/event-bus-local' }
@@ -37,7 +35,7 @@ const eventBusModule = IS_TEST
         redisUrl: REDIS_URL,
         redisOptions,
       },
-    }
+    };
 
 const workflowEngineModule = IS_TEST
   ? { resolve: '@medusajs/medusa/workflow-engine-inmemory' }
@@ -49,9 +47,9 @@ const workflowEngineModule = IS_TEST
           options: redisOptionsForBullMQ,
         },
       },
-    }
+    };
 
-module.exports = defineConfig({
+export default defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
     redisUrl: REDIS_URL,
@@ -63,6 +61,7 @@ module.exports = defineConfig({
       jwtSecret: process.env.JWT_SECRET || 'supersecret',
       cookieSecret: process.env.COOKIE_SECRET || 'supersecret',
     },
+    workerMode: process.env.MEDUSA_WORKER_MODE as 'shared' | 'worker' | 'server',
   },
   modules: [
     {
@@ -84,9 +83,8 @@ module.exports = defineConfig({
     workflowEngineModule,
   ],
   admin: {
-    backendUrl: process.env.ADMIN_BACKEND_URL,
-    path: "/app", // 👈 esto es obligatorio y no puede ser '/'
-    
+    disable: process.env.DISABLE_MEDUSA_ADMIN === 'true',
+    backendUrl: process.env.MEDUSA_BACKEND_URL,
     vite: (config) => {
       return {
         ...config,
@@ -98,21 +96,11 @@ module.exports = defineConfig({
           alias: [
             {
               find: /^@lambdacurry.*$/,
-              replacement: (val: string) => val.replace(/\\/g, '/'), // ✅ tipado
+              replacement: (val: string) => val.replace(/\\/g, '/'),
             },
           ],
-        },        
-      }
+        },
+      };
     },
   },
-})
-
-// plugins opcionales
-/*
-plugins: [
-  {
-    resolve: '@lambdacurry/medusa-product-reviews',
-    options: {},
-  },
-]
-*/
+});
