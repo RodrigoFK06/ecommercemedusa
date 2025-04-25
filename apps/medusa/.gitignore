@@ -25,9 +25,9 @@ build
 !.yarn/sdks
 !.yarn/versions
 
-.medusa/*
+.medusa/server/
 !.medusa/client/
-!.medusa/client/**
+
 
 demo-values.yaml
 
