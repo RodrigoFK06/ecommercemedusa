@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: medusa-backend
+    env: node
+    rootDir: apps/medusa
+    buildCommand: |
+      yarn install
+      yarn build
+      cp -r .medusa/client .medusa/server/admin
+    startCommand: yarn start
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      # Base de datos (Neon)
+      - key: DB_NAME
+        value: medusa_store
+      - key: DATABASE_URL
+        value: postgresql://neondb_owner:npg_KX87bUyBadzP@ep-sweet-rice-ac0urkja-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require
+
+      # Redis (Upstash)
+      - key: REDIS_URL
+        value: rediss://default:AW83AAIjcDE2MmU0NGU5OGU3MGE0Y2I4OWM5OTAyM2EwZjQ0YjI5ZXAxMA@ultimate-elk-28471.upstash.io:6379
+
+      # CORS
+      - key: STORE_CORS
+        value: https://ecommercemedusa-storefront.vercel.app
+      - key: ADMIN_CORS
+        value: https://ecommercemedusa-storefront.vercel.app
+      - key: AUTH_CORS
+        value: https://ecommercemedusa-storefront.vercel.app
+
+      # Seguridad
+      - key: JWT_SECRET
+        value: 74d439f452a079321e5e4636c3b909dd4ae8a6558b51e4af7e760d4cadc25562
+      - key: COOKIE_SECRET
+        value: 74d439f452a079321e5e4636c3b909dd4ae8a6558b51e4af7e760d4cadc25562
+
+      # URL del admin embebido (solo se usa si lo consumes desde otro frontend)
+      - key: ADMIN_BACKEND_URL
+        value: http://localhost:9000
