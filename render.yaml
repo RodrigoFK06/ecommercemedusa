@@ -4,9 +4,11 @@ services:
     env: node
     rootDir: apps/medusa
     buildCommand: |
-      yarn install --immutable
+      yarn install
+      cd apps/medusa
       yarn build
-      cp -r .medusa/client .medusa/server/admin
+      cp -r .medusa/client/* .medusa/server/public/admin/
+
     startCommand: yarn start
     envVars:
       - key: NODE_ENV

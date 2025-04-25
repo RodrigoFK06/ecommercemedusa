@@ -34,11 +34,11 @@ yalc.lock
 
 static/*
 
-
+# Incluir admin embebido
 !.medusa/
-!.medusa/client/
-!.medusa/client/**
 !.medusa/server/
 !.medusa/server/public/
 !.medusa/server/public/admin/
-!.medusa/server/public/admin/index.html
+!.medusa/server/public/admin/**
+
+
