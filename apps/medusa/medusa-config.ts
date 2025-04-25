@@ -85,6 +85,8 @@ module.exports = defineConfig({
   ],
   admin: {
     backendUrl: process.env.ADMIN_BACKEND_URL,
+    path: "/app", // 👈 esto es obligatorio y no puede ser '/'
+    
     vite: (config) => {
       return {
         ...config,
