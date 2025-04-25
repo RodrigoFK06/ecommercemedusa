@@ -1,10 +1,23 @@
-import { defineConfig, loadEnv } from '@medusajs/framework/utils';
+import { defineConfig, loadEnv } from '@medusajs/framework/utils'
 
-loadEnv(process.env.NODE_ENV || 'development', process.cwd());
+loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
-const REDIS_URL = process.env.REDIS_URL;
-const STRIPE_API_KEY = process.env.STRIPE_API_KEY;
-const IS_TEST = process.env.NODE_ENV === 'test';
+const REDIS_URL = process.env.REDIS_URL
+const STRIPE_API_KEY = process.env.STRIPE_API_KEY
+const IS_TEST = process.env.NODE_ENV === 'test'
+
+// General Redis options (para cache y event-bus)
+const redisOptions = {
+  maxRetriesPerRequest: null,
+  connectTimeout: 10000,
+  tls: {}, // Necesario si estás usando rediss:// (Upstash por ejemplo)
+}
+
+// Redis options específicas para BullMQ (workflow-engine)
+const redisOptionsForBullMQ = {
+  ...redisOptions,
+  maxRetriesPerRequest: null, // ❗ Obligatorio para BullMQ
+}
 
 const cacheModule = IS_TEST
   ? { resolve: '@medusajs/medusa/cache-inmemory' }
@@ -12,8 +25,9 @@ const cacheModule = IS_TEST
       resolve: '@medusajs/medusa/cache-redis',
       options: {
         redisUrl: REDIS_URL,
+        redisOptions,
       },
-    };
+    }
 
 const eventBusModule = IS_TEST
   ? { resolve: '@medusajs/medusa/event-bus-local' }
@@ -21,8 +35,9 @@ const eventBusModule = IS_TEST
       resolve: '@medusajs/medusa/event-bus-redis',
       options: {
         redisUrl: REDIS_URL,
+        redisOptions,
       },
-    };
+    }
 
 const workflowEngineModule = IS_TEST
   ? { resolve: '@medusajs/medusa/workflow-engine-inmemory' }
@@ -31,18 +46,15 @@ const workflowEngineModule = IS_TEST
       options: {
         redis: {
           url: REDIS_URL,
+          options: redisOptionsForBullMQ,
         },
       },
-    };
+    }
 
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
-    databaseDriverOptions: {
-      ssl: false,
-    },
     redisUrl: REDIS_URL,
-
     redisPrefix: process.env.REDIS_PREFIX,
     http: {
       storeCors: process.env.STORE_CORS || '',
@@ -52,9 +64,6 @@ module.exports = defineConfig({
       cookieSecret: process.env.COOKIE_SECRET || 'supersecret',
     },
   },
-
-
-
   modules: [
     {
       resolve: '@medusajs/medusa/payment',
@@ -87,21 +96,21 @@ module.exports = defineConfig({
           alias: [
             {
               find: /^@lambdacurry.*$/,
-              replacement: (val: string) => val.replace(/\\/g, '/'),
+              replacement: (val: string) => val.replace(/\\/g, '/'), // ✅ tipado
             },
           ],
-        },
-      };
+        },        
+      }
     },
   },
-  
-  
-});
+})
 
-  {/*plugins: [
-    {
-      resolve: '@lambdacurry/medusa-product-reviews',
-      options: {},
-    },
-  ],
-  */}
+// plugins opcionales
+/*
+plugins: [
+  {
+    resolve: '@lambdacurry/medusa-product-reviews',
+    options: {},
+  },
+]
+*/
