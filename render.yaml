@@ -4,7 +4,7 @@ services:
     env: node
     rootDir: apps/medusa
     buildCommand: |
-      yarn install
+      yarn install --immutable
       yarn build
       cp -r .medusa/client .medusa/server/admin
     startCommand: yarn start
@@ -36,6 +36,6 @@ services:
       - key: COOKIE_SECRET
         value: 74d439f452a079321e5e4636c3b909dd4ae8a6558b51e4af7e760d4cadc25562
 
-      # URL del admin embebido (solo se usa si lo consumes desde otro frontend)
+      # URL del admin embebido (solo si otro frontend lo consume, opcional)
       - key: ADMIN_BACKEND_URL
         value: http://localhost:9000

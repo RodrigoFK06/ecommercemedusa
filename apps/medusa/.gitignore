@@ -33,3 +33,12 @@ demo-values.yaml
 yalc.lock
 
 static/*
+
+
+!.medusa/
+!.medusa/client/
+!.medusa/client/**
+!.medusa/server/
+!.medusa/server/public/
+!.medusa/server/public/admin/
+!.medusa/server/public/admin/index.html
